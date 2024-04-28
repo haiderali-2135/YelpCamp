@@ -20,7 +20,7 @@ module.exports.createCampground = async(req, res, next) => {
         query: req.body.campground.location,
         limit: 1
     }).send()
-    console.log(geoData);
+   // console.log(geoData);
     const campground = new Campground(req.body.campground);
     campground.geometry = geoData.body.features[0].geometry;
     campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }))
@@ -74,14 +74,6 @@ module.exports.updateCampground = async(req, res) => {
 
 module.exports.deleteCampground = async(req, res) => {
     const { id } = req.params;
-    // console.log(req.params);
-    const camp = await Campground.findById(id);
-
-    for (var i = 0; i < camp.images.length; i++) {
-        // console.log(camp.images[i].filename);
-        await cloudinary.uploader.destroy(camp.images[i].filename);
-    }
-
     await Campground.findByIdAndDelete(id);
     req.flash('success', 'Campground Deleted!');
     res.redirect('/campgrounds');
